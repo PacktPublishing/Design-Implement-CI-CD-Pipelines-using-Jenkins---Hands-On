@@ -1,0 +1,35 @@
+pipeline {
+    agent {
+  label 'linux'
+}
+tools {
+  maven 'maven_3'
+}
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/madhuri75jha/simple-order-processing-app.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                sh 'mvn clean package -Dmaven.test.failure.ignore=true'
+            }
+        }
+    }
+
+    post {
+
+        success {
+            junit '**/target/surefire-reports/TEST-*.xml'
+            archiveArtifacts 'target/*.jar'
+        }
+
+        failure {
+            echo 'Build Failed'
+        }
+    }
+}

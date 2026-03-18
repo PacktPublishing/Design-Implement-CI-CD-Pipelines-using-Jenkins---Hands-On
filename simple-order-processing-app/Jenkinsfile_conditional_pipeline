@@ -1,0 +1,40 @@
+pipeline{
+agent any
+parameters {
+        string(name: 'DEPLOY_ENV',
+                defaultValue: 'dev',
+                description: 'Environment to Deploy (dev or prod)'
+                )
+           }
+stages {
+    stage('BUILD'){
+        steps{
+            echo 'BUILDING THE APPLICATION'
+             }
+              }
+     stage('RUN UNIT TESTS'){
+        when {
+                expression { params.DEPLOY_ENV != 'prod' }
+            }
+        steps{
+            echo 'RUNNING UNIT TESTS'
+             }
+              }
+      stage('DEPLOY TO PRODUCTION'){
+        when {
+                expression { params.DEPLOY_ENV == 'prod' }
+            }
+        steps{
+            echo 'Deploying Application to PRODUCTION...'
+             }
+              }
+        }
+post {
+     success { 
+         echo 'PIPELINE EXECUTED SUCCESSFULLY'
+}
+      failure {
+            echo 'Pipeline FAILED!!!. Please check LOGS...'
+}
+}
+}
